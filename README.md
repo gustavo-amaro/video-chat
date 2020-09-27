@@ -15,4 +15,4 @@ This project is a simple video chat using socket.io and peerjs.
 - Run peerjs server with `peerjs --port 3001`
 - Run server with `npm run dev` or `yarn dev`
 - open browser on `http://localhost:3000`
-- open another browser on same address and enjoy!
+- open another browser in the same address and enjoy!
