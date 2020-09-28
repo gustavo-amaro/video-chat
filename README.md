@@ -1,6 +1,6 @@
 # Video chat
 
-This project is a simple video chat using socket.io and peerjs.
+This project is a simple video chat(like a zoom) using socket.io and peerjs.
 
 ## Requirements
 
