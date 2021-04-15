@@ -1,10 +1,11 @@
 const socket = io("/");
 const videoGrid = document.getElementById("video-grid");
 const myPeer = new Peer(undefined, {
-  host: "/",
-  port: "9001",
+  host: "peerserver.quizclass.com.br",
+  secure: true,
 });
 
+console.log(myPeer);
 const myVideo = document.createElement("video");
 
 myVideo.muted = true;
