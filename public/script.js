@@ -1,5 +1,6 @@
 const socket = io("/");
 const videoGrid = document.getElementById("video-grid");
+const idList = document.getElementById("id-list");
 const myPeer = new Peer(undefined, {
   host: "peerserver.quizclass.com.br",
   secure: true,
@@ -11,27 +12,10 @@ myVideo.muted = true;
 
 const peers = {};
 
-navigator.mediaDevices
-  .getUserMedia({
-    video: true,
-    audio: true,
-  })
-  .then((stream) => {
-    addVideoStream(myVideo, stream);
-
-    myPeer.on("call", (call) => {
-      call.answer(stream, peers);
-      const video = document.createElement("video");
-
-      call.on("stream", (userVideoStream) => {
-        addVideoStream(video, userVideoStream);
-      });
-    });
-
-    socket.on("user-connected", (userId) => {
-      connectToNewUser(userId, stream);
-    });
-  });
+const getUserMedia =
+  navigator.mediaDevices.getUserMedia ||
+  navigator.mediaDevices.webkitGetUserMedia ||
+  navigator.mediaDevices.mozGetUserMedia;
 
 socket.on("user-disconnected", (userId) => {
   if (peers[userId]) peers[userId].close();
@@ -40,6 +24,37 @@ socket.on("user-disconnected", (userId) => {
 myPeer.on("open", (id) => {
   console.log(ROOM_ID);
   socket.emit("join-room", ROOM_ID, id);
+
+  getUserMedia({
+    video: true,
+    audio: true,
+  }).then((stream) => {
+    addVideoStream(myVideo, stream);
+
+    socket.on("user-connected", (userId) => {
+      connectToNewUser(userId, stream);
+    });
+  });
+});
+
+myPeer.on("call", (call) => {
+  peers[call.peer] = call;
+
+  getUserMedia({
+    video: true,
+    audio: true,
+  }).then((stream) => {
+    call.answer(stream, peers);
+    const video = document.createElement("video");
+
+    call.on("stream", (userVideoStream) => {
+      addVideoStream(video, userVideoStream);
+    });
+
+    call.on("close", () => {
+      video.remove();
+    });
+  });
 });
 
 function connectToNewUser(userId, stream) {
@@ -49,6 +64,7 @@ function connectToNewUser(userId, stream) {
   call.on("stream", (userVideoStream) => {
     addVideoStream(video, userVideoStream);
   });
+
   call.on("close", () => {
     video.remove();
   });
