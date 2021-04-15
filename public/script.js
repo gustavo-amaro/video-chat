@@ -5,7 +5,6 @@ const myPeer = new Peer(undefined, {
   secure: true,
 });
 
-console.log(myPeer);
 const myVideo = document.createElement("video");
 
 myVideo.muted = true;
