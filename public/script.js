@@ -32,6 +32,8 @@ myPeer.on("open", (id) => {
     addVideoStream(myVideo, stream);
 
     socket.on("user-connected", (userId) => {
+      const audio = new Audio("notification.wav");
+      audio.play();
       connectToNewUser(userId, stream);
     });
   });
